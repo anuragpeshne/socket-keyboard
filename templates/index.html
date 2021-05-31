@@ -3,24 +3,58 @@
    <head>
       <meta charset="UTF-8">
       <title>SocketIO example</title>
+      <style>
+        #container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #touchpad {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #aaa;
+        }
+
+        input {
+            width: 100%;
+        }
+      </style>
       <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
       <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
       <script type="text/javascript">
-         $(document).ready(function() {
-         
-           // sending a connect request to the server.
-           var socket = io.connect('http://localhost:5000');
-         
-           socket.on('after connect', function(msg) {
-               console.log('After connect', msg);
-               $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
-          });        
-         });
+        $(document).ready(function() {
+
+            // sending a connect request to the server.
+            var socket = io.connect('http://localhost:5000');
+
+            socket.on('after connect', function(msg) {
+                console.log('After connect', msg);
+            });
+
+            var click_start_xy = [0, 0];
+
+            $("#touchpad").bind("touchstart mousedown", function(e) {
+                click_start_xy = [e.pageX, e.pageY];
+            });
+
+            $("#touchpad").bind("touchstart, mouseup", function(e) {
+                var click_end_xy = [e.pageX, e.pageY];
+                var diffX =  click_end_xy[0] - click_start_xy[0];
+                var diffY =  click_end_xy[1] - click_start_xy[1];
+                console.log(diffX, diffY);
+                socket.emit('touchpadDiff', [diffX, diffY]);
+            });
+        });
       </script>
    </head>
    <body>
-    <h1>SocketIO Example</h1>
-    <h2>Receive:</h2>
-    <div id="log"></div>
+     <div id="container">
+       <div id="keyboard-input-container">
+         <input type="text"></input>
+       </div>
+       <div id="touchpad-container">
+         <div id="touchpad"></div>
+       </div>
+     </div>
    </body>
 </html>

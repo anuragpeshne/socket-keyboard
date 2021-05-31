@@ -12,5 +12,9 @@ def index():
 def test_connect():
     emit('after connect',  {'data':'Lets dance'})
 
+@socketio.on('touchpadDiff')
+def touchpad_event(data):
+    print(data)
+
 if __name__ == '__main__':
     socketio.run(app)
